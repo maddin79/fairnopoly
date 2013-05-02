@@ -73,16 +73,16 @@ module ApplicationHelper
     hero = "<div id=\"hero\">"
     begin 
        
-       if @users_hero == true
-         hero += render :partial => '/hero/users/default'
+       if @rendered_hero
+         hero += render :partial => "/hero/#{@rendered_hero[:controller]}/#{@rendered_hero[:action]}"
        else
-         hero += render :partial => '/hero/'+ params[:controller] + '/' + params[:action] 
+         hero += render :partial => "/hero/#{params[:controller]}/#{params[:action]}"
        end
        
        hero << "</div>"   
         rescue ActionView::MissingTemplate
           begin
-            hero += render :partial => '/hero/'+ params[:controller] + '/default' 
+            hero += render :partial => "/hero/#{params[:controller]}/default"
             hero << "</div>"   
           rescue ActionView::MissingTemplate 
             hero = ""
@@ -97,4 +97,30 @@ module ApplicationHelper
     tip += "</span></a>"
     tip.html_safe
   end
+  
+  def title(title = nil)
+    if title.present?
+      content_for :title, title
+    else
+      content_for?(:title) ? content_for(:title) + t('auction.show.title_addition') : t('common.fairnopoly')
+    end
+  end
+  
+  def meta_keywords(tags = nil)
+    if tags.present?
+      content_for :meta_keywords, tags
+    else
+      content_for?(:meta_keywords) ? [content_for(:meta_keywords), t('meta_tags.keywords')].join(', ') : t('meta_tags.keywords')
+    end
+  end
+
+  def meta_description(desc = nil)
+    if desc.present?
+      content_for :meta_description, desc
+    else
+      content_for?(:meta_description) ? content_for(:meta_description) : t('meta_tags.description')
+    end
+  end
+  
+  
 end
